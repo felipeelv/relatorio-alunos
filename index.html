@@ -1,22 +1,23 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Relatório 360º - Avaliação Pedagógica</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatório 360º com Texto e Escala Likert</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f4f4f4; }
-    .container { max-width: 1000px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; }
+    body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
+    .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 8px; }
     h1, h2, h3 { text-align: center; }
-    label { display: block; margin-top: 15px; font-weight: bold; }
-    input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
+    label { display: block; font-weight: bold; margin-top: 20px; }
+    input[type="text"] { width: 100%; padding: 8px; margin-top: 5px; margin-bottom: 20px; }
     .section { margin-top: 40px; }
-    .btn { display: block; margin: 20px auto; padding: 10px 20px; background: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .likert-group { display: flex; justify-content: space-between; margin: 10px 0; }
+    .likert-group label { flex: 1; text-align: center; font-weight: normal; }
+    .likert-group input { display: block; margin: auto; }
+    .btn { display: block; margin: 30px auto; padding: 10px 20px; background: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer; }
     .btn:hover { background: #0056b3; }
-    .chart-container { margin: 30px 0; }
-    .flex { display: flex; flex-wrap: wrap; gap: 10px; }
-    .question-block { flex: 1 1 45%; min-width: 250px; }
+    .chart-container { margin: 40px 0; }
     @media print { .no-print { display: none; } }
   </style>
 </head>
@@ -29,7 +30,6 @@
     <label>Professor(a):</label><input type="text" id="professor">
     <label>Bimestre:</label><input type="text" id="bimestre" value="2º Bimestre">
     <label>Ano Letivo:</label><input type="text" id="ano" value="2025">
-
     <div id="formulario"></div>
     <button class="btn" onclick="gerarRelatorio()">Gerar Relatório</button>
   </div>
@@ -37,8 +37,7 @@
   <div id="resultado" style="display:none">
     <h2>Avaliação 360º</h2>
     <canvas id="graficoRadar" class="chart-container"></canvas>
-    <div id="graficosBarras"></div>
-    <div id="analisesTextuais" style="margin-top: 40px;"></div>
+    <div id="analisesTextuais"></div>
     <button onclick="window.print()" class="btn">Imprimir / Salvar como PDF</button>
   </div>
 </div>
@@ -93,117 +92,82 @@ function criarFormulario() {
     h2.textContent = area;
     sec.appendChild(h2);
 
-    const flex = document.createElement("div");
-    flex.className = "flex";
-
     competencias[area].forEach(criterio => {
-      const block = document.createElement("div");
-      block.className = "question-block";
-
+      const group = document.createElement("div");
       const label = document.createElement("label");
       label.textContent = criterio;
-      const select = document.createElement("select");
-      select.classList.add("nota");
-      select.dataset.area = area;
-      select.dataset.criterio = criterio;
+      group.appendChild(label);
 
-      select.innerHTML = '<option value="">Selecione</option>' + [1,2,3,4,5].map(n => `<option>${n}</option>`).join("");
-      block.appendChild(label);
-      block.appendChild(select);
-      flex.appendChild(block);
+      const likert = document.createElement("div");
+      likert.className = "likert-group";
+
+      for (let i = 1; i <= 5; i++) {
+        const sublabel = document.createElement("label");
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = area + "_" + criterio;
+        radio.value = i;
+        radio.dataset.area = area;
+        radio.dataset.criterio = criterio;
+        sublabel.appendChild(radio);
+        sublabel.appendChild(document.createTextNode(i));
+        likert.appendChild(sublabel);
+      }
+      group.appendChild(likert);
+      sec.appendChild(group);
     });
-
-    sec.appendChild(flex);
     container.appendChild(sec);
   }
 }
 
 function gerarRelatorio() {
-  const dados = {}, medias = {}, textos = {};
-  document.querySelectorAll(".nota").forEach(el => {
-    const area = el.dataset.area;
-    const criterio = el.dataset.criterio;
-    const nota = parseInt(el.value);
+  const dados = {};
+  const radios = document.querySelectorAll("input[type='radio']:checked");
+  radios.forEach(radio => {
+    const area = radio.dataset.area;
+    const criterio = radio.dataset.criterio;
+    const nota = parseInt(radio.value);
     if (!dados[area]) dados[area] = {};
-    if (!isNaN(nota)) dados[area][criterio] = nota;
+    dados[area][criterio] = nota;
   });
 
-  // Radar 360
-  const radarCanvas = document.getElementById("graficoRadar");
   const labels = Object.keys(dados);
-  const mediasAluno = labels.map(area => {
+  const medias = labels.map(area => {
     const notas = Object.values(dados[area]);
-    const media = notas.reduce((a, b) => a + b, 0) / notas.length;
-    medias[area] = media.toFixed(2);
-    return media;
+    return notas.reduce((a, b) => a + b, 0) / notas.length;
   });
 
-  new Chart(radarCanvas, {
+  new Chart(document.getElementById("graficoRadar"), {
     type: 'radar',
     data: {
       labels: labels,
-      datasets: [
-        { label: 'Avaliação Geral', data: mediasAluno, backgroundColor: 'rgba(54,162,235,0.2)', borderColor: '#36a2eb' }
-      ]
+      datasets: [{
+        label: 'Avaliação Geral por Área',
+        data: medias,
+        backgroundColor: 'rgba(54,162,235,0.2)',
+        borderColor: '#36a2eb'
+      }]
     },
     options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
   });
 
-  // Gráficos de barras + textos
-  const graficosDiv = document.getElementById("graficosBarras");
   const analisesDiv = document.getElementById("analisesTextuais");
-  graficosDiv.innerHTML = "";
-  analisesDiv.innerHTML = "";
-
-  for (const area in dados) {
-    const criterios = Object.keys(dados[area]);
-    const notas = criterios.map(c => dados[area][c]);
-
-    const media = notas.reduce((a, b) => a + b, 0) / notas.length;
-    let analise = "<strong>" + area + ":</strong> ";
+  analisesDiv.innerHTML = "<h2>Análises por Área</h2>";
+  labels.forEach((area, index) => {
+    const media = medias[index];
+    let texto = "<h3>" + area + "</h3><p>";
     if (media >= 4.5) {
-      analise += "O aluno demonstrou excelência em praticamente todos os critérios dessa área.";
+      texto += "O aluno demonstrou excelente domínio nas competências desta área, com alto desempenho em praticamente todos os critérios.";
     } else if (media >= 3.5) {
-      analise += "Apresenta bom desenvolvimento, com alguns pontos a fortalecer.";
+      texto += "Apresenta bom desenvolvimento geral, com pontos fortes bem definidos, embora ainda haja espaço para aprimoramento.";
     } else if (media >= 2.5) {
-      analise += "Ainda em processo de consolidação de habilidades importantes.";
+      texto += "O desempenho está em processo de consolidação. Recomenda-se acompanhamento para fortalecer habilidades essenciais.";
     } else {
-      analise += "Necessita de atenção pedagógica intensiva nessa área.";
+      texto += "Necessita de apoio pedagógico contínuo para superar dificuldades identificadas nos critérios desta área.";
     }
-
-    const texto = document.createElement("p");
-    texto.innerHTML = analise;
-    analisesDiv.appendChild(texto);
-
-    const sec = document.createElement("div");
-    sec.className = "chart-container";
-    const h3 = document.createElement("h3");
-    h3.textContent = area;
-    const canvas = document.createElement("canvas");
-
-    sec.appendChild(h3);
-    sec.appendChild(canvas);
-    graficosDiv.appendChild(sec);
-
-    new Chart(canvas, {
-      type: 'bar',
-      data: {
-        labels: criterios,
-        datasets: [{
-          label: 'Notas do Aluno',
-          data: notas,
-          backgroundColor: '#007BFF'
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { display: false } },
-        scales: {
-          y: { beginAtZero: true, max: 5 }
-        }
-      }
-    });
-  }
+    texto += "</p>";
+    analisesDiv.innerHTML += texto;
+  });
 
   document.getElementById("resultado").style.display = "block";
   window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });

@@ -6,29 +6,36 @@
   <title>Relatório 360º com Texto e Escala Likert</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
-    .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 8px; }
-    h1, h2, h3 { text-align: center; }
-    label { display: block; font-weight: bold; margin-top: 20px; }
-    input[type="text"] { width: 100%; padding: 8px; margin-top: 5px; margin-bottom: 20px; }
-    .section { margin-top: 40px; }
+    body { font-family: Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+    .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h1, h2, h3 { text-align: center; color: #333; }
+    label { display: block; font-weight: bold; margin-top: 15px; color: #444; }
+    input[type="text"], select { width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc; }
+    .section { margin-top: 30px; }
     .likert-group { display: flex; justify-content: space-between; margin: 10px 0; }
     .likert-group label { flex: 1; text-align: center; font-weight: normal; }
     .likert-group input { display: block; margin: auto; }
-    .btn { display: block; margin: 30px auto; padding: 10px 20px; background: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    .btn { display: inline-block; margin: 30px 10px 0; padding: 10px 20px; background: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer; }
     .btn:hover { background: #0056b3; }
     .chart-container { margin: 40px 0; }
+    #topo-formulario, #resultado { transition: all 0.3s ease; }
     @media print { .no-print { display: none; } }
   </style>
 </head>
 <body>
 <div class="container">
   <h1>Relatório 360º - Avaliação Pedagógica</h1>
-  <div class="no-print">
+  <div id="topo-formulario" class="no-print">
     <label>Nome do Aluno:</label><input type="text" id="aluno">
     <label>Turma/Série:</label><input type="text" id="turma">
     <label>Professor(a):</label><input type="text" id="professor">
-    <label>Bimestre:</label><input type="text" id="bimestre" value="2º Bimestre">
+    <label>Bimestre:</label>
+    <select id="bimestre">
+      <option value="1º Bimestre">1º Bimestre</option>
+      <option value="2º Bimestre" selected>2º Bimestre</option>
+      <option value="3º Bimestre">3º Bimestre</option>
+      <option value="4º Bimestre">4º Bimestre</option>
+    </select>
     <label>Ano Letivo:</label><input type="text" id="ano" value="2025">
     <div id="formulario"></div>
     <button class="btn" onclick="gerarRelatorio()">Gerar Relatório</button>
@@ -38,7 +45,10 @@
     <h2>Avaliação 360º</h2>
     <canvas id="graficoRadar" class="chart-container"></canvas>
     <div id="analisesTextuais"></div>
-    <button onclick="window.print()" class="btn">Imprimir / Salvar como PDF</button>
+    <div class="no-print" style="text-align:center">
+      <button onclick="window.print()" class="btn">Imprimir / Salvar como PDF</button>
+      <button onclick="novoRelatorio()" class="btn">Fazer Novo Relatório</button>
+    </div>
   </div>
 </div>
 
@@ -85,6 +95,7 @@ const competencias = {
 
 function criarFormulario() {
   const container = document.getElementById("formulario");
+  container.innerHTML = "";
   for (const area in competencias) {
     const sec = document.createElement("div");
     sec.className = "section";
@@ -110,7 +121,7 @@ function criarFormulario() {
         radio.dataset.area = area;
         radio.dataset.criterio = criterio;
         sublabel.appendChild(radio);
-        sublabel.appendChild(document.createTextNode(i));
+        sublabel.append(" " + i);
         likert.appendChild(sublabel);
       }
       group.appendChild(likert);
@@ -169,8 +180,17 @@ function gerarRelatorio() {
     analisesDiv.innerHTML += texto;
   });
 
+  document.getElementById("topo-formulario").style.display = "none";
   document.getElementById("resultado").style.display = "block";
-  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function novoRelatorio() {
+  document.getElementById("resultado").style.display = "none";
+  document.getElementById("topo-formulario").style.display = "block";
+  document.getElementById("formulario").innerHTML = "";
+  criarFormulario();
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 criarFormulario();

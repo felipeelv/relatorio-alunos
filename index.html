@@ -2,95 +2,193 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Relatório Avaliativo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relatório de Desenvolvimento do Aluno</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      padding: 20px;
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f4f4f4; }
+    .container { max-width: 1000px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; }
+    h1, h2 { text-align: center; }
+    label { display: block; margin: 10px 0 5px; font-weight: bold; }
+    input[type="text"], textarea, select {
+      width: 100%; padding: 8px; margin-bottom: 15px; border-radius: 4px; border: 1px solid #ccc;
     }
-    form {
-      background: #fff;
-      padding: 20px;
-      max-width: 600px;
-      margin: auto;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-    input[type="text"],
-    input[type="date"],
-    textarea {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-    }
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: #007BFF;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
+    .section { margin-top: 40px; }
+    .chart-container { width: 100%; margin-top: 30px; }
+    .btn { display: inline-block; padding: 10px 20px; background: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .btn:hover { background: #0056b3; }
+    .flex { display: flex; flex-wrap: wrap; gap: 10px; }
+    .question-block { flex: 1 1 45%; min-width: 280px; }
+    .scale-options label { margin-right: 10px; }
+    @media print {
+      .no-print { display: none; }
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Relatório de Desenvolvimento</h1>
+    <div class="no-print">
+      <label>Nome do Aluno:</label>
+      <input type="text" id="aluno" />
+      <label>Turma/Série:</label>
+      <input type="text" id="turma" />
+      <label>Professor(a):</label>
+      <input type="text" id="professor" />
+      <label>Período:</label>
+      <input type="text" id="periodo" value="2º Bimestre de 2025" />
 
-  <form id="relatorioForm">
-    <h1>Relatório Avaliativo do Aluno</h1>
+      <div class="section">
+        <h2>Português</h2>
+        <div class="flex">
+          <div class="question-block">
+            <label>Ortografia</label>
+            <select class="nota" data-area="Português"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
+          </div>
+          <div class="question-block">
+            <label>Produção de Texto (lógica)</label>
+            <select class="nota" data-area="Português"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
+          </div>
+        </div>
+        <label>Observações:</label>
+        <textarea id="obs_portugues"></textarea>
+      </div>
 
-    <label for="nome">Nome do Aluno:</label>
-    <input type="text" id="nome" name="nome" required />
+      <div class="section">
+        <h2>Matemática</h2>
+        <div class="flex">
+          <div class="question-block">
+            <label>Numeração até 100</label>
+            <select class="nota" data-area="Matemática"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
+          </div>
+          <div class="question-block">
+            <label>Valor Posicional</label>
+            <select class="nota" data-area="Matemática"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
+          </div>
+        </div>
+        <label>Observações:</label>
+        <textarea id="obs_matematica"></textarea>
+      </div>
 
-    <label for="turma">Turma/Série:</label>
-    <input type="text" id="turma" name="turma" required />
+      <div class="section">
+        <h2>Ciências</h2>
+        <div class="flex">
+          <div class="question-block">
+            <label>Plantas e animais</label>
+            <select class="nota" data-area="Ciências"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
+          </div>
+          <div class="question-block">
+            <label>Prevenção de acidentes</label>
+            <select class="nota" data-area="Ciências"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
+          </div>
+        </div>
+        <label>Observações:</label>
+        <textarea id="obs_ciencias"></textarea>
+      </div>
 
-    <label for="professor">Professor(a):</label>
-    <input type="text" id="professor" name="professor" required />
+      <div class="section">
+        <h2>Sócioemocional</h2>
+        <div class="flex">
+          <div class="question-block">
+            <label>Autoconhecimento</label>
+            <select class="nota" data-area="Socioemocional"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
+          </div>
+          <div class="question-block">
+            <label>Responsabilidade</label>
+            <select class="nota" data-area="Socioemocional"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
+          </div>
+        </div>
+        <label>Observações:</label>
+        <textarea id="obs_socioemocional"></textarea>
+      </div>
 
-    <label for="periodo">Período de Avaliação:</label>
-    <input type="text" id="periodo" name="periodo" />
+      <button class="btn" onclick="gerarRelatorio()">Gerar Relatório</button>
+    </div>
 
-    <label for="observacoes">Observações:</label>
-    <textarea id="observacoes" name="observacoes" rows="4"></textarea>
+    <div id="relatorio" style="display:none">
+      <h2>Visão Geral de Desempenho</h2>
+      <p><strong>Nome:</strong> <span id="r_nome"></span> &nbsp;&nbsp; <strong>Turma/Série:</strong> <span id="r_turma"></span></p>
+      <p><strong>Professor(a):</strong> <span id="r_professor"></span> &nbsp;&nbsp; <strong>Período:</strong> <span id="r_periodo"></span></p>
 
-    <label for="data">Data:</label>
-    <input type="date" id="data" name="data" />
+      <canvas id="graficoBarras" class="chart-container"></canvas>
+      <canvas id="graficoRadar" class="chart-container"></canvas>
 
-    <button type="button" onclick="salvarComoPDF()">Salvar como PDF</button>
-  </form>
+      <div class="section">
+        <h3>Observações</h3>
+        <p><strong>Português:</strong> <span id="r_obs_portugues"></span></p>
+        <p><strong>Matemática:</strong> <span id="r_obs_matematica"></span></p>
+        <p><strong>Ciências:</strong> <span id="r_obs_ciencias"></span></p>
+        <p><strong>Socioemocional:</strong> <span id="r_obs_socio"></span></p>
+      </div>
+
+      <div style="text-align:center; margin-top:50px">
+        <button onclick="window.print()" class="btn">Exportar PDF / Imprimir</button>
+      </div>
+    </div>
+  </div>
 
   <script>
-    const campos = document.querySelectorAll('#relatorioForm input, #relatorioForm textarea');
+    function gerarRelatorio() {
+      const nome = document.getElementById('aluno').value;
+      const turma = document.getElementById('turma').value;
+      const professor = document.getElementById('professor').value;
+      const periodo = document.getElementById('periodo').value;
 
-    campos.forEach(campo => {
-      const id = campo.id;
-      campo.value = localStorage.getItem(id) || '';
-      campo.addEventListener('input', () => localStorage.setItem(id, campo.value));
-    });
+      document.getElementById('r_nome').textContent = nome;
+      document.getElementById('r_turma').textContent = turma;
+      document.getElementById('r_professor').textContent = professor;
+      document.getElementById('r_periodo').textContent = periodo;
 
-    function salvarComoPDF() {
-      window.print();
+      document.getElementById('r_obs_portugues').textContent = document.getElementById('obs_portugues').value;
+      document.getElementById('r_obs_matematica').textContent = document.getElementById('obs_matematica').value;
+      document.getElementById('r_obs_ciencias').textContent = document.getElementById('obs_ciencias').value;
+      document.getElementById('r_obs_socio').textContent = document.getElementById('obs_socioemocional').value;
+
+      const notas = document.querySelectorAll('.nota');
+      const dados = {};
+
+      notas.forEach(nota => {
+        const area = nota.dataset.area;
+        const valor = parseInt(nota.value);
+        if (!dados[area]) dados[area] = [];
+        if (!isNaN(valor)) dados[area].push(valor);
+      });
+
+      const labels = Object.keys(dados);
+      const mediaAluno = labels.map(area => {
+        const soma = dados[area].reduce((a, b) => a + b, 0);
+        return (soma / dados[area].length).toFixed(2);
+      });
+
+      const mediaTurma = labels.map(() => (3 + Math.random() * 1.5).toFixed(2));
+
+      new Chart(document.getElementById('graficoBarras'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'Aluno', data: mediaAluno, backgroundColor: 'blue' },
+            { label: 'Média da Turma', data: mediaTurma, backgroundColor: 'gray' }
+          ]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+      });
+
+      new Chart(document.getElementById('graficoRadar'), {
+        type: 'radar',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'Aluno', data: mediaAluno, backgroundColor: 'rgba(0,0,255,0.2)', borderColor: 'blue' },
+            { label: 'Média da Turma', data: mediaTurma, backgroundColor: 'rgba(128,128,128,0.2)', borderColor: 'gray' }
+          ]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+      });
+
+      document.getElementById('relatorio').style.display = 'block';
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
   </script>
-
 </body>
 </html>

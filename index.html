@@ -19,71 +19,72 @@
     .btn:hover { background: #0056b3; }
     .flex { display: flex; flex-wrap: wrap; gap: 10px; }
     .question-block { flex: 1 1 45%; min-width: 280px; }
-    .scale-options label { margin-right: 10px; }
-    @media print {
-      .no-print { display: none; }
-    }
+    @media print { .no-print { display: none; } }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Relatório de Desenvolvimento</h1>
+    <h1>Relatório de Desenvolvimento por Competências</h1>
     <div class="no-print">
+      <label>Ano Letivo:</label>
+      <input type="text" id="ano" value="2025" />
+      <label>Bimestre:</label>
+      <input type="text" id="bimestre" value="2º Bimestre" />
       <label>Nome do Aluno:</label>
       <input type="text" id="aluno" />
       <label>Turma/Série:</label>
       <input type="text" id="turma" />
       <label>Professor(a):</label>
       <input type="text" id="professor" />
-      <label>Período:</label>
-      <input type="text" id="periodo" value="2º Bimestre de 2025" />
 
       <div class="section">
-        <h2>Português</h2>
+        <h2>Língua Portuguesa</h2>
         <div class="flex">
           <div class="question-block">
-            <label>Ortografia</label>
+            <label>Leitura e interpretação</label>
             <select class="nota" data-area="Português"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
           </div>
           <div class="question-block">
-            <label>Produção de Texto (lógica)</label>
+            <label>Produção textual</label>
+            <select class="nota" data-area="Português"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
+          </div>
+          <div class="question-block">
+            <label>Ortografia e gramática</label>
             <select class="nota" data-area="Português"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
           </div>
         </div>
-        <label>Observações:</label>
-        <textarea id="obs_portugues"></textarea>
       </div>
 
       <div class="section">
         <h2>Matemática</h2>
         <div class="flex">
           <div class="question-block">
-            <label>Numeração até 100</label>
+            <label>Noção numérica</label>
             <select class="nota" data-area="Matemática"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
           </div>
           <div class="question-block">
-            <label>Valor Posicional</label>
+            <label>Resolução de problemas</label>
+            <select class="nota" data-area="Matemática"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
+          </div>
+          <div class="question-block">
+            <label>Raciocínio lógico</label>
             <select class="nota" data-area="Matemática"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
           </div>
         </div>
-        <label>Observações:</label>
-        <textarea id="obs_matematica"></textarea>
       </div>
 
       <div class="section">
         <h2>Ciências</h2>
         <div class="flex">
           <div class="question-block">
-            <label>Plantas e animais</label>
+            <label>Curiosidade científica</label>
             <select class="nota" data-area="Ciências"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
           </div>
           <div class="question-block">
-            <label>Prevenção de acidentes</label>
+            <label>Aplicação no cotidiano</label>
             <select class="nota" data-area="Ciências"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
           </div>
         </div>
-        <label>Observações:</label>
-        <textarea id="obs_ciencias"></textarea>
       </div>
 
       <div class="section">
@@ -94,33 +95,18 @@
             <select class="nota" data-area="Socioemocional"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
           </div>
           <div class="question-block">
-            <label>Responsabilidade</label>
+            <label>Habilidades sociais</label>
             <select class="nota" data-area="Socioemocional"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
           </div>
         </div>
-        <label>Observações:</label>
-        <textarea id="obs_socioemocional"></textarea>
       </div>
 
       <button class="btn" onclick="gerarRelatorio()">Gerar Relatório</button>
     </div>
 
     <div id="relatorio" style="display:none">
-      <h2>Visão Geral de Desempenho</h2>
-      <p><strong>Nome:</strong> <span id="r_nome"></span> &nbsp;&nbsp; <strong>Turma/Série:</strong> <span id="r_turma"></span></p>
-      <p><strong>Professor(a):</strong> <span id="r_professor"></span> &nbsp;&nbsp; <strong>Período:</strong> <span id="r_periodo"></span></p>
-
-      <canvas id="graficoBarras" class="chart-container"></canvas>
+      <h2>Gráfico Geral por Competência</h2>
       <canvas id="graficoRadar" class="chart-container"></canvas>
-
-      <div class="section">
-        <h3>Observações</h3>
-        <p><strong>Português:</strong> <span id="r_obs_portugues"></span></p>
-        <p><strong>Matemática:</strong> <span id="r_obs_matematica"></span></p>
-        <p><strong>Ciências:</strong> <span id="r_obs_ciencias"></span></p>
-        <p><strong>Socioemocional:</strong> <span id="r_obs_socio"></span></p>
-      </div>
-
       <div style="text-align:center; margin-top:50px">
         <button onclick="window.print()" class="btn">Exportar PDF / Imprimir</button>
       </div>
@@ -129,24 +115,8 @@
 
   <script>
     function gerarRelatorio() {
-      const nome = document.getElementById('aluno').value;
-      const turma = document.getElementById('turma').value;
-      const professor = document.getElementById('professor').value;
-      const periodo = document.getElementById('periodo').value;
-
-      document.getElementById('r_nome').textContent = nome;
-      document.getElementById('r_turma').textContent = turma;
-      document.getElementById('r_professor').textContent = professor;
-      document.getElementById('r_periodo').textContent = periodo;
-
-      document.getElementById('r_obs_portugues').textContent = document.getElementById('obs_portugues').value;
-      document.getElementById('r_obs_matematica').textContent = document.getElementById('obs_matematica').value;
-      document.getElementById('r_obs_ciencias').textContent = document.getElementById('obs_ciencias').value;
-      document.getElementById('r_obs_socio').textContent = document.getElementById('obs_socioemocional').value;
-
-      const notas = document.querySelectorAll('.nota');
       const dados = {};
-
+      const notas = document.querySelectorAll('.nota');
       notas.forEach(nota => {
         const area = nota.dataset.area;
         const valor = parseInt(nota.value);
@@ -162,28 +132,19 @@
 
       const mediaTurma = labels.map(() => (3 + Math.random() * 1.5).toFixed(2));
 
-      new Chart(document.getElementById('graficoBarras'), {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [
-            { label: 'Aluno', data: mediaAluno, backgroundColor: 'blue' },
-            { label: 'Média da Turma', data: mediaTurma, backgroundColor: 'gray' }
-          ]
-        },
-        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-      });
-
       new Chart(document.getElementById('graficoRadar'), {
         type: 'radar',
         data: {
           labels: labels,
           datasets: [
-            { label: 'Aluno', data: mediaAluno, backgroundColor: 'rgba(0,0,255,0.2)', borderColor: 'blue' },
-            { label: 'Média da Turma', data: mediaTurma, backgroundColor: 'rgba(128,128,128,0.2)', borderColor: 'gray' }
+            { label: 'Aluno', data: mediaAluno, backgroundColor: 'rgba(54,162,235,0.2)', borderColor: '#36a2eb' },
+            { label: 'Média da Turma', data: mediaTurma, backgroundColor: 'rgba(153,102,255,0.2)', borderColor: '#9966ff' }
           ]
         },
-        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        options: {
+          responsive: true,
+          plugins: { legend: { position: 'bottom' } }
+        }
       });
 
       document.getElementById('relatorio').style.display = 'block';

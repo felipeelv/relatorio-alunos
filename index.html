@@ -19,6 +19,8 @@
     .btn:hover { background: #0056b3; }
     .chart-container { margin: 40px 0; }
     #topo-formulario, #resultado { transition: all 0.3s ease; }
+    .analise-box { margin-bottom: 40px; border-top: 1px solid #ddd; padding-top: 20px; }
+    .analise-box p { margin-bottom: 10px; line-height: 1.6; }
     @media print { .no-print { display: none; } }
   </style>
 </head>
@@ -166,18 +168,28 @@ function gerarRelatorio() {
   analisesDiv.innerHTML = "<h2>Análises por Área</h2>";
   labels.forEach((area, index) => {
     const media = medias[index];
-    let texto = "<h3>" + area + "</h3><p>";
+    let parecer = "<div class='analise-box'><h3>" + area + "</h3>";
+
+    // Parecer descritivo completo
     if (media >= 4.5) {
-      texto += "O aluno demonstrou excelente domínio nas competências desta área, com alto desempenho em praticamente todos os critérios.";
+      parecer += "<p><strong>Parecer:</strong> O aluno apresentou desempenho excelente nesta área, demonstrando segurança e autonomia para aplicar os conhecimentos de forma clara e organizada. As produções e participações evidenciam domínio pleno dos conteúdos trabalhados.</p>";
+      parecer += "<p><strong>Pontos fortes:</strong> Constância no desempenho, segurança ao executar tarefas, clareza na comunicação e resoluções bem elaboradas.</p>";
+      parecer += "<p><strong>Pontos de melhoria:</strong> Estimular novos desafios para potencializar ainda mais suas capacidades.</p>";
     } else if (media >= 3.5) {
-      texto += "Apresenta bom desenvolvimento geral, com pontos fortes bem definidos, embora ainda haja espaço para aprimoramento.";
+      parecer += "<p><strong>Parecer:</strong> O aluno apresenta bom desenvolvimento nesta área. Consegue aplicar os conhecimentos com relativa autonomia e participa das atividades com envolvimento. Há indícios de compreensão sólida dos conteúdos.</p>";
+      parecer += "<p><strong>Pontos fortes:</strong> Boa organização nas tarefas, interesse pelas atividades e esforço contínuo para aprender.</p>";
+      parecer += "<p><strong>Pontos de melhoria:</strong> Consolidar alguns conceitos específicos para aprimorar a fluência e a precisão em suas respostas.</p>";
     } else if (media >= 2.5) {
-      texto += "O desempenho está em processo de consolidação. Recomenda-se acompanhamento para fortalecer habilidades essenciais.";
+      parecer += "<p><strong>Parecer:</strong> O aluno está em processo de consolidação das habilidades nesta área. Demonstra esforço, mas ainda encontra dificuldades em compreender ou aplicar os conteúdos de forma consistente.</p>";
+      parecer += "<p><strong>Pontos fortes:</strong> Interesse em aprender, receptividade aos feedbacks e persistência.</p>";
+      parecer += "<p><strong>Pontos de melhoria:</strong> Necessita reforço pedagógico para fortalecer conceitos básicos e desenvolver maior segurança nas tarefas.</p>";
     } else {
-      texto += "Necessita de apoio pedagógico contínuo para superar dificuldades identificadas nos critérios desta área.";
+      parecer += "<p><strong>Parecer:</strong> O aluno apresenta dificuldades significativas nesta área. Mostra necessidade de acompanhamento constante para compreender os conteúdos e realizar as atividades propostas.</p>";
+      parecer += "<p><strong>Pontos fortes:</strong> Participação quando estimulado, disposição para tentar superar os desafios.</p>";
+      parecer += "<p><strong>Pontos de melhoria:</strong> Demanda apoio individualizado para avançar na construção dos conhecimentos e melhorar a autonomia nas tarefas.</p>";
     }
-    texto += "</p>";
-    analisesDiv.innerHTML += texto;
+    parecer += "</div>";
+    analisesDiv.innerHTML += parecer;
   });
 
   document.getElementById("topo-formulario").style.display = "none";

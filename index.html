@@ -3,174 +3,213 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Relatório de Desenvolvimento do Aluno</title>
+  <title>Relatório 360º - Avaliação Pedagógica</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f4f4f4; }
     .container { max-width: 1000px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; }
-    h1, h2 { text-align: center; }
-    label { display: block; margin: 10px 0 5px; font-weight: bold; }
-    input[type="text"], textarea, select {
-      width: 100%; padding: 8px; margin-bottom: 15px; border-radius: 4px; border: 1px solid #ccc;
-    }
+    h1, h2, h3 { text-align: center; }
+    label { display: block; margin-top: 15px; font-weight: bold; }
+    input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
     .section { margin-top: 40px; }
-    .chart-container { width: 100%; margin-top: 30px; }
-    .btn { display: inline-block; padding: 10px 20px; background: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .btn { display: block; margin: 20px auto; padding: 10px 20px; background: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer; }
     .btn:hover { background: #0056b3; }
+    .chart-container { margin: 30px 0; }
     .flex { display: flex; flex-wrap: wrap; gap: 10px; }
-    .question-block { flex: 1 1 45%; min-width: 280px; }
+    .question-block { flex: 1 1 45%; min-width: 250px; }
     @media print { .no-print { display: none; } }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Relatório de Desenvolvimento por Competências</h1>
-    <div class="no-print">
-      <label>Ano Letivo:</label>
-      <input type="text" id="ano" value="2025" />
-      <label>Bimestre:</label>
-      <input type="text" id="bimestre" value="2º Bimestre" />
-      <label>Nome do Aluno:</label>
-      <input type="text" id="aluno" />
-      <label>Turma/Série:</label>
-      <input type="text" id="turma" />
-      <label>Professor(a):</label>
-      <input type="text" id="professor" />
+<div class="container">
+  <h1>Relatório 360º - Avaliação Pedagógica</h1>
+  <div class="no-print">
+    <label>Nome do Aluno:</label><input type="text" id="aluno">
+    <label>Turma/Série:</label><input type="text" id="turma">
+    <label>Professor(a):</label><input type="text" id="professor">
+    <label>Bimestre:</label><input type="text" id="bimestre" value="2º Bimestre">
+    <label>Ano Letivo:</label><input type="text" id="ano" value="2025">
 
-      <div class="section" id="formulario"></div>
-      <button class="btn" onclick="gerarRelatorio()">Gerar Relatório</button>
-    </div>
-
-    <div id="relatorio" style="display:none">
-      <h2>Gráficos por Área</h2>
-      <div id="graficos"></div>
-      <div style="text-align:center; margin-top:50px">
-        <button onclick="window.print()" class="btn">Exportar PDF / Imprimir</button>
-      </div>
-    </div>
+    <div id="formulario"></div>
+    <button class="btn" onclick="gerarRelatorio()">Gerar Relatório</button>
   </div>
 
-  <script>
-    const competencias = {
-      "Língua Portuguesa": [
-        "Domínio da leitura e compreensão textual",
-        "Produção escrita e estruturação textual",
-        "Conhecimentos ortográficos",
-        "Análise morfossintática",
-        "Uso da pontuação e recursos expressivos"
-      ],
-      "Matemática": [
-        "Compreensão do sistema de numeração decimal",
-        "Resolução de problemas envolvendo operações básicas",
-        "Compreensão de grandezas e medidas",
-        "Raciocínio geométrico e espacial",
-        "Interpretação e organização de dados"
-      ],
-      "Estudos Sociais": [
-        "Compreensão das transformações espaciais e temporais",
-        "Reconhecimento da diversidade social e cultural",
-        "Interpretação de paisagens e representações espaciais",
-        "Identificação das relações entre sociedade e natureza",
-        "Consciência de cidadania e espaços públicos/privados"
-      ],
-      "Ciências": [
-        "Aplicação do método científico",
-        "Compreensão dos fenômenos físicos",
-        "Conhecimento sobre órgãos sensoriais e percepção",
-        "Entendimento sobre seres vivos e suas relações",
-        "Consciência ambiental e sustentabilidade"
-      ],
-      "Socioemocional": [
-        "Autoconhecimento",
-        "Autorregulação",
-        "Habilidades sociais e relacionamento",
-        "Comunicação",
-        "Responsabilidade e autonomia",
-        "Participação e engajamento",
-        "Valores e atitudes"
+  <div id="resultado" style="display:none">
+    <h2>Avaliação 360º</h2>
+    <canvas id="graficoRadar" class="chart-container"></canvas>
+    <div id="graficosBarras"></div>
+    <div id="analisesTextuais" style="margin-top: 40px;"></div>
+    <button onclick="window.print()" class="btn">Imprimir / Salvar como PDF</button>
+  </div>
+</div>
+
+<script>
+const competencias = {
+  "Língua Portuguesa": [
+    "Domínio da leitura e compreensão textual",
+    "Produção escrita e estruturação textual",
+    "Conhecimentos ortográficos",
+    "Análise morfossintática",
+    "Uso da pontuação e recursos expressivos"
+  ],
+  "Matemática": [
+    "Compreensão do sistema de numeração decimal",
+    "Resolução de problemas com operações básicas",
+    "Grandezas e medidas",
+    "Raciocínio geométrico e espacial",
+    "Organização e interpretação de dados"
+  ],
+  "Ciências": [
+    "Aplicação do método científico",
+    "Compreensão de fenômenos físicos",
+    "Órgãos sensoriais e percepção",
+    "Seres vivos e relações ecológicas",
+    "Consciência ambiental e sustentabilidade"
+  ],
+  "Estudos Sociais": [
+    "Transformações espaciais e temporais",
+    "Diversidade social e cultural",
+    "Paisagens e representações espaciais",
+    "Relações sociedade-natureza",
+    "Cidadania e espaços públicos"
+  ],
+  "Socioemocional": [
+    "Autoconhecimento",
+    "Autorregulação",
+    "Relacionamento e empatia",
+    "Comunicação",
+    "Responsabilidade e autonomia",
+    "Participação e engajamento",
+    "Valores e atitudes"
+  ]
+};
+
+function criarFormulario() {
+  const container = document.getElementById("formulario");
+  for (const area in competencias) {
+    const sec = document.createElement("div");
+    sec.className = "section";
+    const h2 = document.createElement("h2");
+    h2.textContent = area;
+    sec.appendChild(h2);
+
+    const flex = document.createElement("div");
+    flex.className = "flex";
+
+    competencias[area].forEach(criterio => {
+      const block = document.createElement("div");
+      block.className = "question-block";
+
+      const label = document.createElement("label");
+      label.textContent = criterio;
+      const select = document.createElement("select");
+      select.classList.add("nota");
+      select.dataset.area = area;
+      select.dataset.criterio = criterio;
+
+      select.innerHTML = '<option value="">Selecione</option>' + [1,2,3,4,5].map(n => `<option>${n}</option>`).join("");
+      block.appendChild(label);
+      block.appendChild(select);
+      flex.appendChild(block);
+    });
+
+    sec.appendChild(flex);
+    container.appendChild(sec);
+  }
+}
+
+function gerarRelatorio() {
+  const dados = {}, medias = {}, textos = {};
+  document.querySelectorAll(".nota").forEach(el => {
+    const area = el.dataset.area;
+    const criterio = el.dataset.criterio;
+    const nota = parseInt(el.value);
+    if (!dados[area]) dados[area] = {};
+    if (!isNaN(nota)) dados[area][criterio] = nota;
+  });
+
+  // Radar 360
+  const radarCanvas = document.getElementById("graficoRadar");
+  const labels = Object.keys(dados);
+  const mediasAluno = labels.map(area => {
+    const notas = Object.values(dados[area]);
+    const media = notas.reduce((a, b) => a + b, 0) / notas.length;
+    medias[area] = media.toFixed(2);
+    return media;
+  });
+
+  new Chart(radarCanvas, {
+    type: 'radar',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: 'Avaliação Geral', data: mediasAluno, backgroundColor: 'rgba(54,162,235,0.2)', borderColor: '#36a2eb' }
       ]
-    };
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  });
 
-    function criarFormulario() {
-      const formDiv = document.getElementById("formulario");
-      for (const area in competencias) {
-        const sec = document.createElement("div");
-        sec.classList.add("section");
-        const titulo = document.createElement("h2");
-        titulo.textContent = area;
-        sec.appendChild(titulo);
+  // Gráficos de barras + textos
+  const graficosDiv = document.getElementById("graficosBarras");
+  const analisesDiv = document.getElementById("analisesTextuais");
+  graficosDiv.innerHTML = "";
+  analisesDiv.innerHTML = "";
 
-        const flex = document.createElement("div");
-        flex.classList.add("flex");
+  for (const area in dados) {
+    const criterios = Object.keys(dados[area]);
+    const notas = criterios.map(c => dados[area][c]);
 
-        competencias[area].forEach((criterio, i) => {
-          const bloco = document.createElement("div");
-          bloco.classList.add("question-block");
-          const label = document.createElement("label");
-          label.textContent = criterio;
-          const select = document.createElement("select");
-          select.classList.add("nota");
-          select.dataset.area = area;
-          select.dataset.criterio = criterio;
-          select.innerHTML = '<option value="">Selecione</option>' + [1,2,3,4,5].map(n => `<option>${n}</option>`).join("");
-          bloco.appendChild(label);
-          bloco.appendChild(select);
-          flex.appendChild(bloco);
-        });
-
-        sec.appendChild(flex);
-        formDiv.appendChild(sec);
-      }
+    const media = notas.reduce((a, b) => a + b, 0) / notas.length;
+    let analise = "<strong>" + area + ":</strong> ";
+    if (media >= 4.5) {
+      analise += "O aluno demonstrou excelência em praticamente todos os critérios dessa área.";
+    } else if (media >= 3.5) {
+      analise += "Apresenta bom desenvolvimento, com alguns pontos a fortalecer.";
+    } else if (media >= 2.5) {
+      analise += "Ainda em processo de consolidação de habilidades importantes.";
+    } else {
+      analise += "Necessita de atenção pedagógica intensiva nessa área.";
     }
 
-    criarFormulario();
+    const texto = document.createElement("p");
+    texto.innerHTML = analise;
+    analisesDiv.appendChild(texto);
 
-    function gerarRelatorio() {
-      const dados = {};
-      const notas = document.querySelectorAll('.nota');
-      notas.forEach(nota => {
-        const area = nota.dataset.area;
-        const criterio = nota.dataset.criterio;
-        const valor = parseInt(nota.value);
-        if (!dados[area]) dados[area] = {};
-        if (!isNaN(valor)) dados[area][criterio] = valor;
-      });
+    const sec = document.createElement("div");
+    sec.className = "chart-container";
+    const h3 = document.createElement("h3");
+    h3.textContent = area;
+    const canvas = document.createElement("canvas");
 
-      const container = document.getElementById("graficos");
-      container.innerHTML = "";
-      for (const area in dados) {
-        const criterios = Object.keys(dados[area]);
-        const valores = criterios.map(c => dados[area][c]);
-        const mediaTurma = criterios.map(() => Math.floor(3 + Math.random() * 2));
+    sec.appendChild(h3);
+    sec.appendChild(canvas);
+    graficosDiv.appendChild(sec);
 
-        const div = document.createElement("div");
-        div.classList.add("chart-container");
-        const titulo = document.createElement("h3");
-        titulo.textContent = area;
-        const canvas = document.createElement("canvas");
-        div.appendChild(titulo);
-        div.appendChild(canvas);
-        container.appendChild(div);
-
-        new Chart(canvas, {
-          type: 'radar',
-          data: {
-            labels: criterios,
-            datasets: [
-              { label: 'Aluno', data: valores, backgroundColor: 'rgba(54,162,235,0.2)', borderColor: '#36a2eb' },
-              { label: 'Média da Turma', data: mediaTurma, backgroundColor: 'rgba(75,192,192,0.2)', borderColor: '#4bc0c0' }
-            ]
-          },
-          options: {
-            responsive: true,
-            plugins: { legend: { position: 'bottom' } }
-          }
-        });
+    new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: criterios,
+        datasets: [{
+          label: 'Notas do Aluno',
+          data: notas,
+          backgroundColor: '#007BFF'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, max: 5 }
+        }
       }
+    });
+  }
 
-      document.getElementById('relatorio').style.display = 'block';
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    }
-  </script>
+  document.getElementById("resultado").style.display = "block";
+  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+}
+
+criarFormulario();
+</script>
 </body>
 </html>

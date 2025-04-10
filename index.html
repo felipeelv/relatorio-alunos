@@ -37,76 +37,13 @@
       <label>Professor(a):</label>
       <input type="text" id="professor" />
 
-      <div class="section">
-        <h2>Língua Portuguesa</h2>
-        <div class="flex">
-          <div class="question-block">
-            <label>Leitura e interpretação</label>
-            <select class="nota" data-area="Português"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
-          </div>
-          <div class="question-block">
-            <label>Produção textual</label>
-            <select class="nota" data-area="Português"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
-          </div>
-          <div class="question-block">
-            <label>Ortografia e gramática</label>
-            <select class="nota" data-area="Português"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="section">
-        <h2>Matemática</h2>
-        <div class="flex">
-          <div class="question-block">
-            <label>Noção numérica</label>
-            <select class="nota" data-area="Matemática"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
-          </div>
-          <div class="question-block">
-            <label>Resolução de problemas</label>
-            <select class="nota" data-area="Matemática"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
-          </div>
-          <div class="question-block">
-            <label>Raciocínio lógico</label>
-            <select class="nota" data-area="Matemática"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="section">
-        <h2>Ciências</h2>
-        <div class="flex">
-          <div class="question-block">
-            <label>Curiosidade científica</label>
-            <select class="nota" data-area="Ciências"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
-          </div>
-          <div class="question-block">
-            <label>Aplicação no cotidiano</label>
-            <select class="nota" data-area="Ciências"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="section">
-        <h2>Sócioemocional</h2>
-        <div class="flex">
-          <div class="question-block">
-            <label>Autoconhecimento</label>
-            <select class="nota" data-area="Socioemocional"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
-          </div>
-          <div class="question-block">
-            <label>Habilidades sociais</label>
-            <select class="nota" data-area="Socioemocional"> <option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option> </select>
-          </div>
-        </div>
-      </div>
-
+      <div class="section" id="formulario"></div>
       <button class="btn" onclick="gerarRelatorio()">Gerar Relatório</button>
     </div>
 
     <div id="relatorio" style="display:none">
-      <h2>Gráfico Geral por Competência</h2>
-      <canvas id="graficoRadar" class="chart-container"></canvas>
+      <h2>Gráficos por Área</h2>
+      <div id="graficos"></div>
       <div style="text-align:center; margin-top:50px">
         <button onclick="window.print()" class="btn">Exportar PDF / Imprimir</button>
       </div>
@@ -114,38 +51,140 @@
   </div>
 
   <script>
+    const competencias = {
+      "Língua Portuguesa": [
+        "Domínio da leitura e compreensão textual",
+        "Produção escrita e estruturação textual",
+        "Conhecimentos ortográficos",
+        "Análise morfossintática",
+        "Uso da pontuação e recursos expressivos"
+      ],
+      "Matemática": [
+        "Compreensão do sistema de numeração decimal",
+        "Resolução de problemas envolvendo operações básicas",
+        "Compreensão de grandezas e medidas",
+        "Raciocínio geométrico e espacial",
+        "Interpretação e organização de dados"
+      ],
+      "Estudos Sociais": [
+        "Compreensão das transformações espaciais e temporais",
+        "Reconhecimento da diversidade social e cultural",
+        "Interpretação de paisagens e representações espaciais",
+        "Identificação das relações entre sociedade e natureza",
+        "Consciência de cidadania e espaços públicos/privados"
+      ],
+      "Ciências": [
+        "Aplicação do método científico",
+        "Compreensão dos fenômenos físicos",
+        "Conhecimento sobre órgãos sensoriais e percepção",
+        "Entendimento sobre seres vivos e suas relações",
+        "Consciência ambiental e sustentabilidade"
+      ],
+      "Socioemocional": [
+        "Autoconhecimento: Reconhece e nomeia suas próprias emoções",
+        "Autoconhecimento: Identifica suas qualidades e dificuldades",
+        "Autoconhecimento: Tem noção de seus limites e potencialidades",
+        "Autorregulação: Controla impulsos (esperar sua vez, controlar raiva)",
+        "Autorregulação: Consegue lidar com frustrações e erros",
+        "Autorregulação: Mantém o foco em uma tarefa por tempo suficiente",
+        "Autorregulação: Demonstra persistência diante de dificuldades",
+        "Habilidades sociais: Respeita regras e combinados",
+        "Habilidades sociais: Relaciona-se bem com colegas e adultos",
+        "Habilidades sociais: Demonstra empatia (compreende e respeita sentimentos dos outros)",
+        "Habilidades sociais: Coopera em atividades em grupo",
+        "Habilidades sociais: Resolve conflitos de forma adequada ou busca ajuda",
+        "Comunicação: Expressa suas ideias com clareza",
+        "Comunicação: Escuta com atenção os colegas e adultos",
+        "Comunicação: Respeita o momento de fala do outro",
+        "Responsabilidade e autonomia: Realiza tarefas com independência",
+        "Responsabilidade e autonomia: Organiza seus materiais e ambiente de estudo",
+        "Responsabilidade e autonomia: Assume responsabilidades compatíveis com a idade",
+        "Responsabilidade e autonomia: Cuida de si, dos outros e do espaço coletivo",
+        "Participação e engajamento: Participa das atividades propostas com interesse",
+        "Participação e engajamento: Demonstra curiosidade e iniciativa",
+        "Participação e engajamento: Envolve-se em atividades coletivas com entusiasmo",
+        "Valores e atitudes: Demonstra atitudes de respeito, solidariedade, gentileza e justiça",
+        "Valores e atitudes: Pratica a escuta ativa e o respeito às diferenças",
+        "Valores e atitudes: Assume atitudes éticas no dia a dia escolar"
+      ]
+    };
+
+    function criarFormulario() {
+      const formDiv = document.getElementById("formulario");
+      for (const area in competencias) {
+        const sec = document.createElement("div");
+        sec.classList.add("section");
+        const titulo = document.createElement("h2");
+        titulo.textContent = area;
+        sec.appendChild(titulo);
+
+        const flex = document.createElement("div");
+        flex.classList.add("flex");
+
+        competencias[area].forEach((criterio, i) => {
+          const bloco = document.createElement("div");
+          bloco.classList.add("question-block");
+          const label = document.createElement("label");
+          label.textContent = criterio;
+          const select = document.createElement("select");
+          select.classList.add("nota");
+          select.dataset.area = area;
+          select.dataset.criterio = criterio;
+          select.innerHTML = '<option value="">Selecione</option>' + [1,2,3,4,5].map(n => `<option>${n}</option>`).join("");
+          bloco.appendChild(label);
+          bloco.appendChild(select);
+          flex.appendChild(bloco);
+        });
+
+        sec.appendChild(flex);
+        formDiv.appendChild(sec);
+      }
+    }
+
+    criarFormulario();
+
     function gerarRelatorio() {
       const dados = {};
       const notas = document.querySelectorAll('.nota');
       notas.forEach(nota => {
         const area = nota.dataset.area;
+        const criterio = nota.dataset.criterio;
         const valor = parseInt(nota.value);
-        if (!dados[area]) dados[area] = [];
-        if (!isNaN(valor)) dados[area].push(valor);
+        if (!dados[area]) dados[area] = {};
+        if (!isNaN(valor)) dados[area][criterio] = valor;
       });
 
-      const labels = Object.keys(dados);
-      const mediaAluno = labels.map(area => {
-        const soma = dados[area].reduce((a, b) => a + b, 0);
-        return (soma / dados[area].length).toFixed(2);
-      });
+      const container = document.getElementById("graficos");
+      container.innerHTML = "";
+      for (const area in dados) {
+        const criterios = Object.keys(dados[area]);
+        const valores = criterios.map(c => dados[area][c]);
+        const mediaTurma = criterios.map(() => Math.floor(3 + Math.random() * 2));
 
-      const mediaTurma = labels.map(() => (3 + Math.random() * 1.5).toFixed(2));
+        const div = document.createElement("div");
+        div.classList.add("chart-container");
+        const titulo = document.createElement("h3");
+        titulo.textContent = area;
+        const canvas = document.createElement("canvas");
+        div.appendChild(titulo);
+        div.appendChild(canvas);
+        container.appendChild(div);
 
-      new Chart(document.getElementById('graficoRadar'), {
-        type: 'radar',
-        data: {
-          labels: labels,
-          datasets: [
-            { label: 'Aluno', data: mediaAluno, backgroundColor: 'rgba(54,162,235,0.2)', borderColor: '#36a2eb' },
-            { label: 'Média da Turma', data: mediaTurma, backgroundColor: 'rgba(153,102,255,0.2)', borderColor: '#9966ff' }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { position: 'bottom' } }
-        }
-      });
+        new Chart(canvas, {
+          type: 'radar',
+          data: {
+            labels: criterios,
+            datasets: [
+              { label: 'Aluno', data: valores, backgroundColor: 'rgba(54,162,235,0.2)', borderColor: '#36a2eb' },
+              { label: 'Média da Turma', data: mediaTurma, backgroundColor: 'rgba(75,192,192,0.2)', borderColor: '#4bc0c0' }
+            ]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom' } }
+          }
+        });
+      }
 
       document.getElementById('relatorio').style.display = 'block';
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
